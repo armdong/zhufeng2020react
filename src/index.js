@@ -1,32 +1,31 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-class Counter extends React.Component {
+class Sum extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { number: 0 };
+    this.a = React.createRef();
+    this.b = React.createRef();
+    this.result = React.createRef();
   }
 
-  handleClick = () => {
-    this.setState({ number: this.state.number + 1 });
-    console.log(this.state);
-    this.setState({ number: this.state.number + 1 });
-    console.log(this.state);
-    setTimeout(() => {
-      this.setState({ number: this.state.number + 1 });
-      console.log(this.state);
-    });
+  handleAdd = () => {
+    let a = this.a.current.value;
+    let b = this.b.current.value;
+    this.result.current.value = a + b;
   };
 
   render() {
     return (
-      <div>
-        <p>number: {this.state.number}</p>
-        <button onClick={this.handleClick}>+</button>
-      </div>
+      <>
+        <input type="text" ref={this.a} />
+        <input type="text" ref={this.b} />
+        <button onClick={this.handleAdd}>=</button>
+        <input type="text" ref={this.result} />
+      </>
     );
   }
 }
 
-ReactDOM.render(<Counter title="计数器" />, document.getElementById("root"));
+ReactDOM.render(<Sum />, document.getElementById("root"));

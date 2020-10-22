@@ -1,9 +1,11 @@
 import Component from "./Component";
 
 function createElement(type, config, children) {
+  let ref;
   if (config) {
     delete config.__source;
     delete config.__self;
+    ref = config.ref;
   }
 
   let props = { ...config };
@@ -12,10 +14,15 @@ function createElement(type, config, children) {
   }
   props.children = children;
 
-  return { type, props };
+  return { type, props, ref };
+}
+
+function createRef() {
+  return { current: null };
 }
 
 export default {
   createElement,
   Component,
+  createRef,
 };

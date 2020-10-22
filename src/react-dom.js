@@ -10,7 +10,7 @@ export function createDOM(vdom) {
     return document.createTextNode(vdom);
   }
 
-  let { type, props } = vdom;
+  let { type, props, ref } = vdom;
   let dom;
   if (typeof type === "function") {
     return type.isReactComponent
@@ -34,6 +34,10 @@ export function createDOM(vdom) {
     reconcileChildren(props.children, dom);
   } else {
     dom.textContent = props.children ? props.children.toString() : "";
+  }
+
+  if (ref) {
+    ref.current = dom;
   }
 
   return dom;
