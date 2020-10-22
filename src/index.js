@@ -1,4 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
-
-ReactDOM.render(<h1>hello</h1>, document.getElementById("root"));
+import React from "./react";
+import ReactDOM from "./react-dom";
+let element = (
+  <div className="title" style={{ color: "red" }}>
+    <span>hello</span>
+  </div>
+);
+ReactDOM.render(element, document.getElementById("root"));
