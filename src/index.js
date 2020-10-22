@@ -1,31 +1,52 @@
 import React from "./react";
 import ReactDOM from "./react-dom";
 
-class Sum extends React.Component {
+class Counter extends React.Component {
+  static defaultProps = {
+    name: "珠峰架构",
+  };
+
   constructor(props) {
     super(props);
 
-    this.a = React.createRef();
-    this.b = React.createRef();
-    this.result = React.createRef();
+    this.state = { number: 0 };
+    console.log("Counter 1.constructor");
   }
 
-  handleAdd = () => {
-    let a = this.a.current.value;
-    let b = this.b.current.value;
-    this.result.current.value = a + b;
+  componentWillMount() {
+    console.log("Counter 2.componentWillMount");
+  }
+
+  componentDidMount() {
+    console.log("Counter 4.componentDidMount");
+  }
+
+  handleClick = () => {
+    this.setState({ number: this.state.number + 1 });
   };
 
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log("Counter 5.shouldComponentUpdate");
+    return nextState.number % 2 === 0;
+  }
+
+  componentWillUpdate() {
+    console.log("Counter 6.componentWillUpdate");
+  }
+
+  componentDidUpdate() {
+    console.log("Counter 7.componentDidUpdate");
+  }
+
   render() {
+    console.log("Counter 3.render");
     return (
-      <>
-        <input type="text" ref={this.a} />
-        <input type="text" ref={this.b} />
-        <button onClick={this.handleAdd}>=</button>
-        <input type="text" ref={this.result} />
-      </>
+      <div>
+        <p>{this.state.number}</p>
+        <button onClick={this.handleClick}>+</button>
+      </div>
     );
   }
 }
 
-ReactDOM.render(<Sum />, document.getElementById("root"));
+ReactDOM.render(<Counter />, document.getElementById("root"));

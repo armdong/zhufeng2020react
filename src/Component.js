@@ -20,15 +20,18 @@ class Updater {
   }
   addState(partialState) {
     this.pendingStates.push(partialState);
-    updateQueue.isBatchingUpdate
-      ? updateQueue.add(this)
-      : this.updateComponent();
+    this.emitUpdate();
+  }
+  emitUpdate(nextProps) {
+    this.nextProps = nextProps;
+    nextProps || !updateQueue.isBatchingUpdate
+      ? this.updateComponent()
+      : updateQueue.add(this);
   }
   updateComponent() {
-    let { classInstance, pendingStates } = this;
-    if (pendingStates.length > 0) {
-      classInstance.state = this.getState();
-      classInstance.forceUpdate();
+    let { classInstance, pendingStates, nextProps } = this;
+    if (nextProps || pendingStates.length > 0) {
+      shouldUpdate(classInstance, nextProps, this.getState());
     }
   }
   getState() {
@@ -47,27 +50,42 @@ class Updater {
   }
 }
 
+function shouldUpdate(classInstance, nextProps, nextState) {
+  classInstance.props = nextProps || classInstance.props;
+  classInstance.state = nextState || classInstance.state;
+  if (
+    classInstance.shouldComponentUpdate &&
+    !classInstance.shouldComponentUpdate(nextProps, nextState)
+  ) {
+    return;
+  }
+  classInstance.forceUpdate();
+}
+
 class Component {
   static isReactComponent = true;
   constructor(props) {
     this.props = props;
     this.state = {};
     this.updater = new Updater(this);
+    this.nextProps = null;
   }
   setState(partialState) {
     this.updater.addState(partialState);
   }
   forceUpdate() {
+    if (this.componentWillUpdate) {
+      this.componentWillUpdate();
+    }
     let newVdom = this.render();
-    updateClassComponent(this, newVdom);
+    let oldDOM = this.dom;
+    let newDOM = createDOM(newVdom);
+    oldDOM.parentNode.replaceChild(newDOM, oldDOM);
+    if (this.componentDidUpdate) {
+      this.componentDidUpdate(this.props, this.state);
+    }
+    this.dom = newDOM;
   }
-}
-
-function updateClassComponent(classInstance, newVdom) {
-  let oldDOM = classInstance.dom;
-  let newDOM = createDOM(newVdom);
-  oldDOM.parentNode.replaceChild(newDOM, oldDOM);
-  classInstance.dom = newDOM;
 }
 
 export default Component;

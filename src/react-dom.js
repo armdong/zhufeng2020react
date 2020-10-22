@@ -52,9 +52,15 @@ function updateFunctionComponent(vdom) {
 function updateClassComponent(vdom) {
   const { type, props } = vdom;
   const classInstance = new type(props);
+  if (classInstance.componentWillMount) {
+    classInstance.componentWillMount();
+  }
   const renderVdom = classInstance.render();
   const dom = createDOM(renderVdom);
   classInstance.dom = dom;
+  if (classInstance.componentDidMount) {
+    classInstance.componentDidMount();
+  }
   return dom;
 }
 
