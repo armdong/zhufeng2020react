@@ -9,7 +9,14 @@ export function createDOM(vdom) {
   }
 
   let { type, props } = vdom;
-  let dom = document.createElement(type);
+  let dom;
+  if (typeof type === "function") {
+    return type.isReactComponent
+      ? updateClassComponent(vdom)
+      : updateFunctionComponent(vdom);
+  } else {
+    dom = document.createElement(type);
+  }
 
   // 更新属性
   updateProps(dom, props);
@@ -27,6 +34,21 @@ export function createDOM(vdom) {
     dom.textContent = props.children ? props.children.toString() : "";
   }
 
+  return dom;
+}
+
+function updateFunctionComponent(vdom) {
+  const { type, props } = vdom;
+  const renderVdom = type(props);
+  return createDOM(renderVdom);
+}
+
+function updateClassComponent(vdom) {
+  const { type, props } = vdom;
+  const classInstance = new type(props);
+  const renderVdom = classInstance.render();
+  const dom = createDOM(renderVdom);
+  classInstance.dom = dom;
   return dom;
 }
 
