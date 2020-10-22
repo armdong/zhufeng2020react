@@ -1,3 +1,5 @@
+import { addEvent } from "./event";
+
 function render(vdom, container) {
   const dom = createDOM(vdom);
   container.appendChild(dom);
@@ -60,6 +62,8 @@ function updateProps(dom, props) {
       for (let attr in style) {
         dom.style[attr] = style[attr];
       }
+    } else if (key.startsWith("on")) {
+      addEvent(dom, key.toLocaleLowerCase(), props[key]);
     } else {
       dom[key] = props[key];
     }
